@@ -1,0 +1,10 @@
+{
+  "name": "balletstar",
+  "displayName": "balletstar",
+  "ios": {
+    "supportsTablet": true,
+    "infoPlist": {
+      "UIBackgroundModes": ["audio"]
+    }
+  }
+}
