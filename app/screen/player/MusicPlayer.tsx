@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import React from 'react';
 import {Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import TrackPlayer, {
+  RepeatMode,
   State,
   usePlaybackState,
   useProgress,
@@ -34,6 +35,31 @@ export const MusicPlayer = ({route}: MusicPlayerType) => {
     title: '',
     duration: 0,
   });
+  const [isRepeat, setIsRepeat] = React.useState(false);
+
+  async function checkRepeatMode() {
+    //반복모드 확인
+    try {
+      const repeatMode = await TrackPlayer.getRepeatMode();
+      if (repeatMode === 1) {
+        setIsRepeat(true);
+      } else if (repeatMode === 0) {
+        setIsRepeat(false);
+      }
+    } catch (error) {
+      console.error('Error while getting repeat mode:', error);
+    }
+  }
+
+  async function repeatModeHandler() {
+    if (isRepeat) {
+      TrackPlayer.setRepeatMode(RepeatMode.Off);
+      setIsRepeat(false);
+    } else {
+      TrackPlayer.setRepeatMode(RepeatMode.Track);
+      setIsRepeat(true);
+    }
+  }
 
   React.useEffect(() => {
     TrackPlayer.addEventListener(
@@ -75,6 +101,10 @@ export const MusicPlayer = ({route}: MusicPlayerType) => {
     }
   }, [isFocused]);
 
+  React.useEffect(() => {
+    checkRepeatMode();
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View
@@ -114,11 +144,18 @@ export const MusicPlayer = ({route}: MusicPlayerType) => {
         <Text style={{fontSize: 18, fontWeight: '700'}}>
           {nowMusicInfo.title}
         </Text>
-
-        <Image
-          source={require('../../assets/img/music_icon.png')}
-          style={{width: '100%', height: 350}}
-        />
+        <View
+          style={{
+            flexDirection: 'row',
+            borderRadius: 8,
+            marginVertical: 20,
+          }}
+        >
+          <Image
+            source={require('../../assets/img/music_icon.png')}
+            style={{width: 250, height: 250, borderRadius: 8}}
+          />
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -172,11 +209,29 @@ export const MusicPlayer = ({route}: MusicPlayerType) => {
             alignItems: 'center',
           }}
         >
+          {/* <View style={{width: 70, height: 70,backgroundColor:''}} /> */}
           <TouchableOpacity
             style={{
               marginTop: 20,
-              width: 70,
-              height: 70,
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              navigation.goBack();
+            }}
+          >
+            <Image
+              style={{width: 50, height: 50}}
+              source={require('@/assets/img/ico_playlist.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              marginTop: 20,
+              flex: 1.5,
+              // width: 70,
+              // height: 70,
               justifyContent: 'center',
               alignItems: 'center',
             }}
@@ -197,8 +252,9 @@ export const MusicPlayer = ({route}: MusicPlayerType) => {
             <TouchableOpacity
               style={{
                 marginTop: 20,
-                width: 70,
-                height: 70,
+                // width: 70,
+                // height: 70,
+                flex: 2,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
@@ -215,8 +271,9 @@ export const MusicPlayer = ({route}: MusicPlayerType) => {
             <TouchableOpacity
               style={{
                 marginTop: 20,
-                width: 70,
-                height: 70,
+                flex: 2,
+                // width: 70,
+                // height: 70,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
@@ -249,6 +306,26 @@ export const MusicPlayer = ({route}: MusicPlayerType) => {
             <Image
               style={{width: 50, height: 50}}
               source={require('@/assets/img/ico_next.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              marginTop: 20,
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              repeatModeHandler();
+            }}
+          >
+            <Image
+              style={{width: 50, height: 50}}
+              source={
+                isRepeat
+                  ? require('@/assets/img/ico_repeat_on.png')
+                  : require('@/assets/img/ico_repeat_off.png')
+              }
             />
           </TouchableOpacity>
         </View>

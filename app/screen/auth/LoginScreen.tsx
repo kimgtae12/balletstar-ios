@@ -482,6 +482,9 @@ const LoginScreen = ({navigation, route}: AuthStackProps) => {
                 playbackState === State.Playing
               })
             `}
+            onContentProcessDidTerminate={() => {
+              webViews.current?.reload();
+            }}
           />
         </View>
       ) : (
